@@ -2,10 +2,14 @@
 check the command line to see if the torchmetrics has the correct version
 there is no error right now inside the code to generate the images
 """
+"""
+The DDP is not implemented inside this code right now, we will use DP right now but this needs to be optimized before we release our paper.
+"""
 
 #@title loading utils
 import torch
 from omegaconf import OmegaConf
+from tqdm import tqdm
 
 from ldm.util import instantiate_from_config
 
@@ -30,6 +34,7 @@ from ldm.models.diffusion.ddim import DDIMSampler
 
 model = get_model()
 sampler = DDIMSampler(model)
+model = torch.compile(model)
 
 import numpy as np 
 from PIL import Image
@@ -54,9 +59,9 @@ with torch.no_grad():
             {model.cond_stage_key: torch.tensor(n_samples_per_class*[1000]).to(model.device)}
             )
         
-        for i in range(51):
-            for class_label in classes:
-                print(f"rendering {n_samples_per_class} examples of class '{class_label}' in {ddim_steps} steps and using s={scale:.2f}.")
+        for class_label in tqdm(classes):
+            for _ in range(51):
+                # print(f"rendering {n_samples_per_class} examples of class '{class_label}' in {ddim_steps} steps and using s={scale:.2f}.")
                 xc = torch.tensor(n_samples_per_class*[class_label])
                 c = model.get_learned_conditioning({model.cond_stage_key: xc.to(model.device)})
                 
