@@ -43,7 +43,7 @@ from torchvision.utils import make_grid
 
 
 classes = [i for i in range(1000)]   # define classes to be sampled here
-n_samples_per_class = 1
+n_samples_per_class = 8
 
 ddim_steps = 250
 ddim_eta = 0.0
@@ -60,7 +60,7 @@ with torch.no_grad():
             )
         
         for class_label in tqdm(classes):
-            for _ in range(51):
+            for _ in range(80):
                 # print(f"rendering {n_samples_per_class} examples of class '{class_label}' in {ddim_steps} steps and using s={scale:.2f}.")
                 xc = torch.tensor(n_samples_per_class*[class_label])
                 c = model.get_learned_conditioning({model.cond_stage_key: xc.to(model.device)})
